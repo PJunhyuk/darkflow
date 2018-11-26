@@ -24,7 +24,7 @@ def process_box(self, b, h, w, threshold):
 	max_indx = np.argmax(b.probs)
 	max_prob = b.probs[max_indx]
 	label = self.meta['labels'][max_indx]
-	if max_prob > threshold:
+	if max_prob > threshold and label == 'person':
 		left  = int ((b.x - b.w/2.) * w)
 		right = int ((b.x + b.w/2.) * w)
 		top   = int ((b.y - b.h/2.) * h)
@@ -40,10 +40,10 @@ def process_box(self, b, h, w, threshold):
 def findboxes(self, net_out):
 	meta, FLAGS = self.meta, self.FLAGS
 	threshold = FLAGS.threshold
-	
+
 	boxes = []
 	boxes = yolo_box_constructor(meta, net_out, threshold)
-	
+
 	return boxes
 
 def preprocess(self, im, allobj = None):
@@ -118,6 +118,6 @@ def postprocess(self, net_out, im, save = True):
 		textFile = os.path.splitext(img_name)[0] + ".json"
 		with open(textFile, 'w') as f:
 			f.write(textJSON)
-		return	
+		return
 
 	cv2.imwrite(img_name, imgcv)
